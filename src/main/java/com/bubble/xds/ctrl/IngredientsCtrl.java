@@ -68,5 +68,10 @@ public class IngredientsCtrl {
         ingredientsService.exportExcel(stockRequest, response);
     }
 
+    @PostMapping("/exportMonth")
+    public void exportMonth(@RequestBody StockRequest stockRequest, HttpServletResponse response) {
+        ingredientsService.exportMonth(stockRequest, response);
+    }
+
 }
 

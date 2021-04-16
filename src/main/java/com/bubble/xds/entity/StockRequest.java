@@ -3,6 +3,7 @@ package com.bubble.xds.entity;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -23,6 +24,8 @@ public class StockRequest {
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private String createTime;
+
+    private Date monthTime;
 
     private List<StockDetail> detailList;
 

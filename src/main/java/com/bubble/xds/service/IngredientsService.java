@@ -42,9 +42,17 @@ public interface IngredientsService {
     Result reEditDetail(StockRequest stockRequest);
 
     /**
-     * 重新编辑
+     * 导出
      * @param stockRequest
+     * @param response
      */
     void exportExcel(StockRequest stockRequest, HttpServletResponse response);
+
+    /**
+     * 按月导出
+     *  @param stockRequest
+     *  @param response
+     */
+    void exportMonth(StockRequest stockRequest, HttpServletResponse response);
 
 }

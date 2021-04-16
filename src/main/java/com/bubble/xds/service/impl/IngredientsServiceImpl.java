@@ -17,10 +17,17 @@ import tk.mybatis.mapper.entity.Example;
 import tk.mybatis.mapper.util.StringUtil;
 
 import javax.servlet.http.HttpServletResponse;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author zhoujingbo/Bob
@@ -149,6 +156,26 @@ public class IngredientsServiceImpl implements IngredientsService {
         Example example = new Example(StockDetail.class);
         example.createCriteria().andEqualTo("stockId", stockRequest.getId());
         List<StockDetail> stockDetails = stockDetailMapper.selectByExample(example);
+        // 添加总数 数据
+        export(response, stockDetails);
+    }
+
+    @Override
+    public void exportMonth(StockRequest stockRequest, HttpServletResponse response) {
+        Example example = new Example(Stock.class);
+        Date monthTime = stockRequest.getMonthTime();
+        LocalDateTime startMonthTime = monthTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDateTime endMonthTime = startMonthTime.plusMonths(1L);
+        example.createCriteria().andGreaterThanOrEqualTo("createTime", startMonthTime).andLessThan("createTime", endMonthTime);
+        List<Stock> stocks = stockMapper.selectByExample(example);
+        List<Integer> stockIds = stocks.stream().map(Stock::getId).collect(Collectors.toList());
+        example = new Example(StockDetail.class);
+        example.createCriteria().andIn("stockId", stockIds);
+        List<StockDetail> stockDetails = stockDetailMapper.selectByExample(example);
+        export(response, stockDetails);
+    }
+
+    private void export(HttpServletResponse response, List<StockDetail> stockDetails) {
         // 添加总数 数据
         double total = stockDetails.stream().mapToDouble(StockDetail::getTotal).sum();
         double weight = stockDetails.stream().mapToDouble(StockDetail::getTotalWeight).sum();
